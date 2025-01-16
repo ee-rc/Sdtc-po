@@ -1,0 +1,105 @@
+
+<!DOCTYPE html>
+<html lang="th">
+<head>
+
+<!-- Firebase App (Core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
+
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js"></script>
+
+<script>
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>สั่งซื้อสินค้า</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <header>
+        <h1>สั่งซื้อสินค้า</h1>
+    </header>
+    <main>
+        <h2>รายการสินค้าในตะกร้า</h2>
+        <div id="cart-items">
+            <!-- รายการสินค้าจะถูกโหลดผ่าน JavaScript -->
+        </div>
+        <form id="checkout-form">
+            <button type="submit">ยืนยันการสั่งซื้อ</button>
+        </form>
+    </main>
+    <footer>
+        <p>Copyright © 2025 SBTC. All Rights Reserved.</p>
+    </footer>
+
+    <script>
+        // ดึงรายการสินค้าจากตะกร้าจาก API
+        fetch('/cart')
+            .then(response => response.json())
+            .then(cartItems => {
+                const cartItemsDiv = document.getElementById('cart-items');
+                cartItemsDiv.innerHTML = '';
+                cartItems.forEach(item => {
+                    const itemDiv = document.createElement('div');
+                    itemDiv.classList.add('cart-item');
+                    itemDiv.innerHTML = `
+                        <p><strong>${item.name}</strong> - ${item.quantity} ชิ้น</p>
+                        <p>ราคา: ${item.price} บาท</p>
+                    `;
+                    cartItemsDiv.appendChild(itemDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching cart items:', error));
+
+        // ส่งคำสั่งซื้อ
+        document.getElementById('checkout-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // ป้องกันการรีเฟรชหน้า
+
+            fetch('/checkout', {
+                method: 'POST',
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('การสั่งซื้อสำเร็จ! ขอบคุณที่ใช้บริการ');
+                    window.location.href = 'index.html'; // กลับไปหน้าแรก
+                } else {
+                    throw new Error('Checkout failed');
+                }
+            })
+            .catch(error => {
+                alert('เกิดข้อผิดพลาดในการสั่งซื้อ');
+                console.error('Checkout error:', error);
+            });
+        });
+    </script>
+
+<script>
+  // Fetch data from Firestore collection: orders
+  db.collection("orders").get().then((querySnapshot) => {
+      const targetElement = document.getElementById("order-summary");
+      querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const item = document.createElement("div");
+          item.innerHTML = JSON.stringify(data); // Customize this for better display
+          targetElement.appendChild(item);
+      });
+  });
+</script>
+
+</body>
+</html>

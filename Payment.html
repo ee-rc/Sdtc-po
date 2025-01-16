@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- Firebase App (Core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-app.js"></script>
+
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/9.21.0/firebase-firestore.js"></script>
+
+<script>
+  // Firebase configuration
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "YOUR_AUTH_DOMAIN",
+    projectId: "YOUR_PROJECT_ID",
+    storageBucket: "YOUR_STORAGE_BUCKET",
+    messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
+    appId: "YOUR_APP_ID"
+  };
+
+  // Initialize Firebase
+  const app = firebase.initializeApp(firebaseConfig);
+  const db = firebase.firestore();
+</script>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เลือกช่องทางการชำระเงิน</title>
+    <link rel="stylesheet" href="styles/style.css">
+</head>
+<body>
+    <header>
+        <h1>ช่องทางการชำระเงิน</h1>
+    </header>
+    <main>
+        <form id="payment-form">
+            <label>
+                <input type="radio" name="payment-method" value="credit-card" required>
+                บัตรเครดิต
+            </label>
+            <label>
+                <input type="radio" name="payment-method" value="paypal">
+                PayPal
+            </label>
+            <label>
+                <input type="radio" name="payment-method" value="bank-transfer">
+                โอนผ่านธนาคาร
+            </label>
+            <button type="submit">ยืนยันการชำระเงิน</button>
+        </form>
+        <script>
+            document.getElementById("payment-form").addEventListener("submit", (e) => {
+                e.preventDefault();
+                const selectedMethod = document.querySelector('input[name="payment-method"]:checked').value;
+                alert(`คุณเลือกวิธีการชำระเงิน: ${selectedMethod}`);
+            });
+        </script>
+        
+    </main>
+
+<script>
+  // Fetch data from Firestore collection: orders
+  db.collection("orders").get().then((querySnapshot) => {
+      const targetElement = document.getElementById("payment-details");
+      querySnapshot.forEach((doc) => {
+          const data = doc.data();
+          const item = document.createElement("div");
+          item.innerHTML = JSON.stringify(data); // Customize this for better display
+          targetElement.appendChild(item);
+      });
+  });
+</script>
+
+</body>
+</html>
